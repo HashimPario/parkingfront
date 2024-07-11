@@ -1,0 +1,46 @@
+.profile-content{
+    width: 100%;
+    padding: 24px 0;
+    border-radius: 5px;
+    box-shadow: 2px 2px 8px 0px #0000004d;
+   
+}
+.profile-content > h3{
+    padding: 0 0 0 24px;
+    margin: 0 !important;
+}
+.form-row{
+    display: flex;
+    width: 90%;
+    margin-top: 40px;
+}
+.form-row > div{
+    width: 50%;
+    text-align: center;
+    position: relative;
+}
+.inputStyle2{
+    width: 85%;
+}
+.profileBtn{
+    width: 20%;
+    margin: 24px 0 12px 0 !important;
+    background: linear-gradient(#F6BE00, #FFF04D) !important;
+    color: black !important;
+   
+}
+.btn-row{
+    width: 86%;
+    display: flex;
+    justify-content: flex-end;
+}
+
+/* .toggle{
+    display: flex !important;
+    flex-direction: row !important;
+}
+.status{
+    display: flex;
+    align-items: center;
+    margin-right: 10px;
+} */
