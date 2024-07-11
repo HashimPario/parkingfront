@@ -33,7 +33,7 @@ const Login = () => {
       const { email, password } = values;
       try {
         const res = await toast.promise(
-          axios.post('/login', { email, password }),
+          axios.post('https://parkingback.vercel.app/login', { email, password }),
           {
             pending: 'Logging in...',
             success: 'Login successful!',

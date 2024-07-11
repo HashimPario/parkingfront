@@ -30,7 +30,7 @@ const Profile = () => {
     onSubmit: async (values) => {
       const { name, oldPassword, newPassword, confirmPassword } = values;
       try {
-        const res = await axios.post(`/updateprofile/${userId}`, { name, oldPassword, newPassword });
+        const res = await axios.post(`https://parkingback.vercel.app/updateprofile/${userId}`, { name, oldPassword, newPassword });
         toast.success(res.data.message);
       }
       catch (error) {

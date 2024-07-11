@@ -35,7 +35,7 @@ const Allparking = () => {
     onSubmit: async (values) => {
       const { areaName } = values;
       try {
-        const res = await axios.post('/addArea', {
+        const res = await axios.post('https://parkingback.vercel.app/addArea', {
           areaName, areaQty, slotQty
         }).then((res) => {
           toast.success(res.data.message)
@@ -62,7 +62,7 @@ const Allparking = () => {
   }
   // let tempId = "662bb6169768cc29554c0ca2"
   const getPlace = async () => {
-    axios.get('/getPlace')
+    axios.get('https://parkingback.vercel.app/getPlace')
       .then((response) => {
         setPlaceData(response.data)
       })
@@ -82,7 +82,7 @@ const addPlace = async (areaId, placeName, slotsQuantity) => {
       const bookings = [];  
       let placeData = [{ placeName, slotsQuantity: parseInt(slotsQuantity), bookings, slotsData }];
       totalSlots = parseInt(totalSlots) + parseInt(slotsQuantity);
-      const res = await axios.post(`/addPlace/${areaId}`, { areaId, totalSlots, placeData, slotsData });
+      const res = await axios.post(`https://parkingback.vercel.app/addPlace/${areaId}`, { areaId, totalSlots, placeData, slotsData });
       console.log("RESPONSEEEEEE", res.data.message);
       toast.success(res.data.message);
       getPlace();

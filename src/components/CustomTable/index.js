@@ -26,7 +26,7 @@ const CustomTable = () => {
 
     const blockUser = (val,blockStatus) => {
         blockStatus === "true" ? blockStatus = "false" : blockStatus = "true"   
-        const res = axios.post(`/blockUser/${val}`,{
+        const res = axios.post(`https://parkingback.vercel.app/blockUser/${val}`,{
             blockStatus
         }).then((res)=>{
             console.log("THEN: ", res)

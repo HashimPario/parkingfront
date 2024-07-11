@@ -74,7 +74,7 @@ function CustomModal(props) {
         const bookingData = [{ placeName: place, slotNumber: slotNum, bookingDate: today, bookingFrom, bookingTo, cost }];
         console.log("COST ", cost);
 
-        axios.post('/userbooking', { userId, bookingData })
+        axios.post('https://parkingback.vercel.app/userbooking', { userId, bookingData })
           .then(() => {
             toast.success('Booking saved successfully!');
           })
@@ -83,7 +83,7 @@ function CustomModal(props) {
             console.log("RESPONSE catch FROM BE", err.message);
           });
 
-        axios.post('/addbooking', { userId, bookingData })
+        axios.post('https://parkingback.vercel.app/addbooking', { userId, bookingData })
           .then(() => {
             //toast.success('Booking added successfully!');
           })

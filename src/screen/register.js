@@ -26,7 +26,7 @@ const Register = () => {
     onSubmit: async (values) => {
       const { name, email, password } = values;
       try {
-        const res = await axios.post('/register', { name, email, password, isBlocked });
+        const res = await axios.post('https://parkingback.vercel.app/register', { name, email, password, isBlocked });
         toast.success(res.data.message);
         //console.log("RESPONSE FROM BE", res.data);
       } catch (error) {

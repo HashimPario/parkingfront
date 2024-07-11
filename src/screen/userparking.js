@@ -36,7 +36,7 @@ const UserParking = () => {
         onSubmit: async (values) => {
             const { areaName } = values;
             try {
-                const res = await axios.post('/addArea', {
+                const res = await axios.post('https://parkingback.vercel.app/addArea', {
                     areaName, areaQty, slotQty
                 }).then((res) => {
                     toast.success(res.data.message)
