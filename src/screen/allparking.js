@@ -45,7 +45,7 @@ const Allparking = () => {
           // console.log(res)
         })
       } catch (err) {
-        toast.error('Erorrrrrr')
+        toast.error('error araha he')
       }
 
     },
