@@ -12,7 +12,7 @@ const App = () => {
     try{
       if(token)
         {
-      axios.get(`/getcurrentuser/${token}`)
+      axios.get(`https://parkingback.vercel.app/getcurrentuser/${token}`)
       .then((res)=>{
         dispatch(addUser(res.data));
         //console.log("API se araha he data: ",res.data)
