@@ -14,7 +14,7 @@ const CustomTable = () => {
     },[])
   
     const getUsers = async () => {
-      axios.get('/getUsers')
+      axios.get('https://parkingback.vercel.app/getUsers')
         .then((response)=> {
           // console.log(response.data);
           setUserData(response.data)  

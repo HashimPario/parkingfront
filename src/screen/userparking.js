@@ -55,7 +55,7 @@ const UserParking = () => {
     const { values, errors, touched, handleBlur, handleChange, handleSubmit } = formik;
 
     const getArea = async () => {
-        axios.get('/getArea')
+        axios.get('https://parkingback.vercel.app/getArea')
             .then((response) => {
                 // console.log(response.data);
                 setAreaData(response.data)
@@ -63,7 +63,7 @@ const UserParking = () => {
     }
     // let tempId = "662bb6169768cc29554c0ca2"
     const getPlace = async () => {
-        axios.get('/getPlace')
+        axios.get('https://parkingback.vercel.app/getPlace')
             .then((response) => {
                 // let allPlacesData = response.data;
                 // console.log("places dataaaaaaa:",response.data);

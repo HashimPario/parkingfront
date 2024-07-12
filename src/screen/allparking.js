@@ -54,7 +54,7 @@ const Allparking = () => {
   const { values, errors, touched, handleBlur, handleChange, handleSubmit } = formik;
 
   const getArea = async () => {
-    axios.get('/getArea')
+    axios.get('https://parkingback.vercel.app/getArea')
       .then((response) => {
         // console.log(response.data);
         setAreaData(response.data)
