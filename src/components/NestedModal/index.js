@@ -62,7 +62,7 @@ function CustomModal(props) {
 
   const userBooking = () => {
     try {
-      window.location.reload(false);
+     
       const today = dayjs().tz('Asia/Karachi').utc().toDate(); 
       const bookingFrom = dayjs(from).tz('Asia/Karachi').utc().toDate(); 
       const bookingTo = dayjs(to).tz('Asia/Karachi').utc().toDate(); 
@@ -98,6 +98,7 @@ function CustomModal(props) {
       toast.error(`Unexpected error: ${err.message}`);
       console.log(err);
     }
+    window.location.reload(false);
   }
 
   return (
