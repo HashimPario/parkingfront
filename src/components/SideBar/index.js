@@ -14,7 +14,7 @@ const SideNav = () => {
     const navigate = useNavigate();
 
     const role = useSelector((state) => state.park.userRole);
-    console.log("ROLEEE",role)
+  //  console.log("ROLEEE",role)
     useEffect(() => {
        
         if (role) {

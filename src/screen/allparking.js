@@ -83,12 +83,12 @@ const addPlace = async (areaId, placeName, slotsQuantity) => {
       let placeData = [{ placeName, slotsQuantity: parseInt(slotsQuantity), bookings, slotsData }];
       totalSlots = parseInt(totalSlots) + parseInt(slotsQuantity);
       const res = await axios.post(`https://parkingback.vercel.app/addPlace/${areaId}`, { areaId, totalSlots, placeData, slotsData });
-      console.log("RESPONSEEEEEE", res.data.message);
+    //  console.log("RESPONSEEEEEE", res.data.message);
       toast.success(res.data.message);
       getPlace();
       getArea();
   } catch (err) {
-      console.log(err.response?.data?.message || 'An error occurred');
+     // console.log(err.response?.data?.message || 'An error occurred');
       toast.error(err.response?.data?.message || 'An error occurred');
   }
 }

@@ -29,11 +29,11 @@ const CustomTable = () => {
         const res = axios.post(`https://parkingback.vercel.app/blockUser/${val}`,{
             blockStatus
         }).then((res)=>{
-            console.log("THEN: ", res)
+        //    console.log("THEN: ", res)
             getUsers();
             
         }).catch((res)=>{
-            console.log("CATCH: ", res)
+       //     console.log("CATCH: ", res)
         })
     }
 

@@ -24,7 +24,7 @@ const BookingTable = () => {
           const response = await axios.get(`https://parkingback.vercel.app/getBookings/${userID}`);
           setBookingData(response.data);
         } catch (error) {
-          console.error("Error fetching bookings: ", error);
+      //    console.error("Error fetching bookings: ", error);
         }
       }
     };

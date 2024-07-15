@@ -32,7 +32,7 @@ const Register = () => {
       } catch (error) {
         if (error.response && error.response.data) {
           toast.error(error.response.data.message);
-          console.log("RESPONSE catch FROM BE", error.response.data.message);
+      //    console.log("RESPONSE catch FROM BE", error.response.data.message);
         } else {
           toast.error("An error occurred");
         }

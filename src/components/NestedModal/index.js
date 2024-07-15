@@ -72,7 +72,7 @@ function CustomModal(props) {
         const cost = hours * 2;
 
         const bookingData = [{ placeName: place, slotNumber: slotNum, bookingDate: today, bookingFrom, bookingTo, cost }];
-        console.log("COST ", cost);
+      //  console.log("COST ", cost);
 
         axios.post('https://parkingback.vercel.app/userbooking', { userId, bookingData })
           .then(() => {
@@ -80,7 +80,7 @@ function CustomModal(props) {
           })
           .catch((err) => {
             toast.error(`Error: ${err.response?.data?.message || err.message}`);
-            console.log("RESPONSE catch FROM BE", err.message);
+          //  console.log("RESPONSE catch FROM BE", err.message);
           });
 
         axios.post('https://parkingback.vercel.app/addbooking', { userId, bookingData })
@@ -89,14 +89,14 @@ function CustomModal(props) {
           })
           .catch((err) => {
             toast.error(`Error: ${err.response?.data?.message || err.message}`);
-            console.log("RESPONSE catch FROM BE", err.message);
+         //   console.log("RESPONSE catch FROM BE", err.message);
           });
       } else {
         toast.error("Kindly select valid bookingFrom and bookingTo dates");
       }
     } catch (err) {
       toast.error(`Unexpected error: ${err.message}`);
-      console.log(err);
+  //    console.log(err);
     }
     //window.location.reload(false);
   }
@@ -135,7 +135,7 @@ function CustomModal(props) {
 function ChildModal(props) {
  
   const { values, place, slots } = props;
-  console.log(slots,"SLOTSSSSSSSS")
+ // console.log(slots,"SLOTSSSSSSSS")
   const myVal = parseInt(values, 10);
   const [open, setOpen] = useState(false);
   const handleOpen = () => {
@@ -158,15 +158,15 @@ function ChildModal(props) {
           <h2>Total Slots</h2>
           <div className='slots-container'>
             {slots.map(item => {
-              console.log(item,"ITEM")
+             // console.log(item,"ITEM")
               const now = dayjs().utc(); 
               const bookingFrom = item.bookFrom ? dayjs(item.bookFrom).utc() : null;
               const bookingTo = item.bookTo ? dayjs(item.bookTo).utc() : null;
               const isBooked = bookingFrom && bookingTo ? now.isSameOrAfter(bookingFrom) && now.isSameOrBefore(bookingTo) : false;
-              console.log("NOW CURRENT TIME", now);
-              console.log("BOOKING FROM", bookingFrom ? bookingFrom.format() : "No bookingFrom");
-              console.log("BOOKING TO", bookingTo ? bookingTo.format() : "No bookingTo");
-              console.log("IS BOOKED:", isBooked);
+           //   console.log("NOW CURRENT TIME", now);
+             // console.log("BOOKING FROM", bookingFrom ? bookingFrom.format() : "No bookingFrom");
+          //    console.log("BOOKING TO", bookingTo ? bookingTo.format() : "No bookingTo");
+          //    console.log("IS BOOKED:", isBooked);
 
               return (
                 <div key={item.slotNumber} className='slots-box'>
@@ -193,7 +193,7 @@ export default function NestedModal(props) {
 
   const customData = placeProp.filter(item => item.areaId === areaProp);
   const specificData = customData[0]?.placeData;
-  console.log("SPECIFIC DATA", specificData);
+ // console.log("SPECIFIC DATA", specificData);
   const [open, setOpen] = useState(false);
   const handleOpen = () => {
     setOpen(true);
