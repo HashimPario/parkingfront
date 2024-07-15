@@ -98,7 +98,7 @@ function CustomModal(props) {
       toast.error(`Unexpected error: ${err.message}`);
       console.log(err);
     }
-    window.location.reload(false);
+    //window.location.reload(false);
   }
 
   return (

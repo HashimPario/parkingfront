@@ -120,7 +120,7 @@ const addPlace = async (areaId, placeName, slotsQuantity) => {
                       val={values.areaName}
                       name="areaName"
                       label="Enter Area Name"
-                      // myclass="inputStyle"
+                      // myclass="inputStyle"            
                       variant="standard"
                     />
                     <span className="area-formik-error">
@@ -196,13 +196,13 @@ const addPlace = async (areaId, placeName, slotsQuantity) => {
                           ADD
                         </Button>
 
-                        <Button
+                        {/* <Button
                           variant='contained'
                           className='areaBtn'
                         // onClick={() => addPlace(item._id,values.placeName,values.slotsQuantity)}
                         >
                           <NestedModal placeProp={placeData} areaProp={item._id} />
-                        </Button>
+                        </Button> */}
 
                         {/* <NestedModal placeProp={placeData} areaProp={item._id}/>   */}
                       </div>
