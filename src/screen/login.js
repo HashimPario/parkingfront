@@ -17,6 +17,7 @@ import { addUser, setUserRole } from '../store/slice';
 
 const Login = () => {
   const [eye, setEye] = useState(false);
+  const [btnDisable, setBtnDisable] = useState('');
   const navigate = useNavigate();
   const dispatch = useDispatch();
   let token;
@@ -29,7 +30,8 @@ const Login = () => {
   const formik = useFormik({
     initialValues: loginInitialValues,
     validationSchema: loginSchema,
-    onSubmit: async (values) => {
+    onSubmit: async (values,  { resetForm }) => {
+      setBtnDisable("true");
       const { email, password } = values;
       try {
         const res = await toast.promise(
@@ -39,22 +41,24 @@ const Login = () => {
             success: 'Login successful!',
             error: {
               render({ data }) {
-                return data.response?.data?.message || 'An error occurred';
-              }
+                setBtnDisable("false");
+                return data.response?.data?.message || 'An error occurred'; 
+              }      
             }
           }
         );
-
+        
         const userRole = res.data.user.role;
         sessionStorage.setItem('token', res.data.user._id);
         dispatch(addUser(res.data.user));
         dispatch(setUserRole(userRole));
-
+        resetForm();
+        navigate('/dashboard');
         setTimeout(() => {
-          navigate('/dashboard');
-        }, 2000);
+          
+        }, 500);
       } catch (error) {
-       
+      
       }
     },
   });
@@ -82,7 +86,7 @@ const Login = () => {
                 errors.email
               ) : null}
             </span>
-            <div style={{ position: 'relative', width: '90%' }}>
+            <div style={{ position: 'relative', width: '100%', textAlign:'center' }}>
               <Input
                 type={eye ? "text" : "password"}
                 myclass="inp-pass"
@@ -116,6 +120,7 @@ const Login = () => {
               variant='contained'
               type="submit"
               className='btnStyle'
+              disabled={btnDisable === 'true'}
             >
               LOGIN
             </Button>

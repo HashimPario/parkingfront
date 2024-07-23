@@ -52,4 +52,13 @@
     color: red;
 }
 
-
+td, th{
+    text-align: center !important;
+}
+th{
+    font-weight: bold !important;
+    font-size: 15px !important;
+}
+.block-btn{
+    width: 130px !important;
+}

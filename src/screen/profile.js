@@ -27,11 +27,12 @@ const Profile = () => {
   const formik = useFormik({
     initialValues: profileInitialValues,
     validationSchema: profileSchema,
-    onSubmit: async (values) => {
+    onSubmit: async (values, {resetForm}) => {
       const { name, oldPassword, newPassword, confirmPassword } = values;
       try {
         const res = await axios.post(`https://parkingback.vercel.app/updateprofile/${userId}`, { name, oldPassword, newPassword });
         toast.success(res.data.message);
+        resetForm();
       }
       catch (error) {
         if (error.response && error.response.data) {

@@ -1,12 +1,9 @@
 "use client"
 import { Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material'
-import ToggleSwitch from '../Switch';
 import axios from 'axios';
 import { useState, useEffect } from 'react';
 
 const CustomTable = () => {
-
-    // let userInfo = props.myValues;
     const[userData,setUserData] = useState([]);
 
     useEffect(()=>{
@@ -16,7 +13,6 @@ const CustomTable = () => {
     const getUsers = async () => {
       axios.get('https://parkingback.vercel.app/getUsers')
         .then((response)=> {
-          // console.log(response.data);
           setUserData(response.data)  
         })   
     }
@@ -29,11 +25,9 @@ const CustomTable = () => {
         const res = axios.post(`https://parkingback.vercel.app/blockUser/${val}`,{
             blockStatus
         }).then((res)=>{
-        //    console.log("THEN: ", res)
             getUsers();
-            
         }).catch((res)=>{
-       //     console.log("CATCH: ", res)
+
         })
     }
 
@@ -48,7 +42,6 @@ const CustomTable = () => {
                             <TableCell className='tableHeading'>Name</TableCell>
                             <TableCell className='tableHeading'>Email</TableCell>
                             <TableCell className='tableHeading'>Status</TableCell>
-                            <TableCell className='tableHeading'>Operation</TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
@@ -57,8 +50,7 @@ const CustomTable = () => {
                                 <TableCell className='tableHeading'>{index + 1}</TableCell>
                                 <TableCell className='tableHeading'>{item.name}</TableCell>
                                 <TableCell className='tableHeading'>{item.email}</TableCell>
-                                <TableCell className='tableHeading'>{item.isBlocked === "true" ? 'Blocked' : 'Un-Blocked'}</TableCell>
-                                <TableCell className='tableHeading'><Button onClick={()=>blockUser(item._id, item.isBlocked)}>Click me</Button></TableCell>
+                                <TableCell className='tableHeading'><Button variant="contained" className="block-btn" color={item.isBlocked === "true" ? 'error' : 'success'} onClick={()=>blockUser(item._id, item.isBlocked)}>{item.isBlocked === "true" ? 'Blocked' : 'Un-Blocked'}</Button></TableCell>
                             </TableRow>
                         
                         )}

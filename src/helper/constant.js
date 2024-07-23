@@ -10,11 +10,11 @@ export const SideBar = [
         title:'Dashboard Admin',
         path:'/dashboard'
     },
-    {
-        icon:<LocalParkingIcon/>,
-        title:'All Parking',
-        path:'/allparking'
-    },
+    // {
+    //     icon:<LocalParkingIcon/>,
+    //     title:'All Parking',
+    //     path:'/allparking'
+    // },
     {
         icon:<PersonIcon/>,
         title:'Users',
@@ -39,11 +39,11 @@ export const SideBarUser = [
         title:'Dashboard User',
         path:'/dashboard'
     },
-    {
-        icon:<LocalParkingIcon/>,
-        title:'All Parking',
-        path:'/userparking'
-    },
+    // {
+    //     icon:<LocalParkingIcon/>,
+    //     title:'All Parking',
+    //     path:'/userparking'
+    // },
     {
         icon:<PersonIcon/>,
         title:'My Bookings',

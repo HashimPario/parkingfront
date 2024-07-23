@@ -14,12 +14,10 @@ const SideNav = () => {
     const navigate = useNavigate();
 
     const role = useSelector((state) => state.park.userRole);
-  //  console.log("ROLEEE",role)
-    useEffect(() => {
-       
+
+    useEffect(() => {     
         if (role) {
-            setSideNavData(role === 'admin' ? SideBar : SideBarUser);
-    
+            setSideNavData(role === 'admin' ? SideBar : SideBarUser);  
         }
     }, [role]);
 

@@ -13,6 +13,7 @@ import timezone from 'dayjs/plugin/timezone';
 import isSameOrAfter from 'dayjs/plugin/isSameOrAfter';
 import isSameOrBefore from 'dayjs/plugin/isSameOrBefore';
 import 'react-toastify/dist/ReactToastify.css';
+import ModalClose from '@mui/joy/ModalClose';
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -34,7 +35,7 @@ const style = {
 };
 
 function CustomModal(props) {
-  const { slotNum, place } = props;
+  const { slotNum, place, areaProp } = props;
   const userData = useSelector((state) => state.park.currentUserData);
   const userId = userData._id;
 
@@ -51,6 +52,7 @@ function CustomModal(props) {
   };
 
   useEffect(() => {
+    console.log("checkingggg")
     const bookSlotFrom = localStorage.getItem("bookingFrom");
     const bookSlotTo = localStorage.getItem("bookingTo");
 
@@ -60,9 +62,19 @@ function CustomModal(props) {
     }
   }, []);
 
+  const getPlaceData = async () => {
+    axios.get('https://parkingback.vercel.app/getPlace')
+        .then((response) => {
+            console.log("RESPONSE COMING",response.data)
+            let tempData = response.data;
+            const customSlotsData = tempData.filter(item => item.areaId === areaProp);
+            const specificData = customSlotsData[0]?.placeData;
+        })
+       
+}
+
   const userBooking = () => {
     try {
-     
       const today = dayjs().tz('Asia/Karachi').utc().toDate(); 
       const bookingFrom = dayjs(from).tz('Asia/Karachi').utc().toDate(); 
       const bookingTo = dayjs(to).tz('Asia/Karachi').utc().toDate(); 
@@ -72,15 +84,13 @@ function CustomModal(props) {
         const cost = hours * 2;
 
         const bookingData = [{ placeName: place, slotNumber: slotNum, bookingDate: today, bookingFrom, bookingTo, cost }];
-      //  console.log("COST ", cost);
 
         axios.post('https://parkingback.vercel.app/userbooking', { userId, bookingData })
           .then(() => {
-            toast.success('Booking saved successfully!');
+            toast.success('Booking save successfully!');
           })
           .catch((err) => {
             toast.error(`Error: ${err.response?.data?.message || err.message}`);
-          //  console.log("RESPONSE catch FROM BE", err.message);
           });
 
         axios.post('https://parkingback.vercel.app/addbooking', { userId, bookingData })
@@ -91,6 +101,8 @@ function CustomModal(props) {
             toast.error(`Error: ${err.response?.data?.message || err.message}`);
          //   console.log("RESPONSE catch FROM BE", err.message);
           });
+         getPlaceData();  
+         
       } else {
         toast.error("Kindly select valid bookingFrom and bookingTo dates");
       }
@@ -110,6 +122,7 @@ function CustomModal(props) {
         aria-labelledby="child-modal-title"
         aria-describedby="child-modal-description"
       >
+         {/* <ModalClose /> */}
         <Box className='custom-modal' sx={{ ...style, width: 400 }}>
           <ToastContainer />
           <h2>Book Slot</h2>
@@ -134,10 +147,12 @@ function CustomModal(props) {
 
 function ChildModal(props) {
  
-  const { values, place, slots } = props;
- // console.log(slots,"SLOTSSSSSSSS")
+  const { values, place, slots, areaProp } = props;
+  const[slotDetails, setSlotDetails] = useState(slots);
+ 
   const myVal = parseInt(values, 10);
   const [open, setOpen] = useState(false);
+
   const handleOpen = () => {
     setOpen(true);
   };
@@ -157,17 +172,13 @@ function ChildModal(props) {
         <Box className='child-modal' sx={{ ...style, width: 500 }}>
           <h2>Total Slots</h2>
           <div className='slots-container'>
-            {slots.map(item => {
-             // console.log(item,"ITEM")
+            {slotDetails?.map(item => {
+           
               const now = dayjs().utc(); 
               const bookingFrom = item.bookFrom ? dayjs(item.bookFrom).utc() : null;
               const bookingTo = item.bookTo ? dayjs(item.bookTo).utc() : null;
               const isBooked = bookingFrom && bookingTo ? now.isSameOrAfter(bookingFrom) && now.isSameOrBefore(bookingTo) : false;
-           //   console.log("NOW CURRENT TIME", now);
-             // console.log("BOOKING FROM", bookingFrom ? bookingFrom.format() : "No bookingFrom");
-          //    console.log("BOOKING TO", bookingTo ? bookingTo.format() : "No bookingTo");
-          //    console.log("IS BOOKED:", isBooked);
-
+          
               return (
                 <div key={item.slotNumber} className='slots-box'>
                   <p>{item.slotNumber}</p>
@@ -175,7 +186,7 @@ function ChildModal(props) {
                     {isBooked ? (
                       <Button variant='contained' disabled>Booked</Button>
                     ) : (
-                      <CustomModal place={place} slotNum={item.slotNumber} />
+                      <CustomModal areaProp={areaProp} place={place} slotNum={item.slotNumber} />
                     )}
                   </p>
                 </div>
@@ -190,10 +201,9 @@ function ChildModal(props) {
 
 export default function NestedModal(props) {
   const { placeProp, areaProp } = props;
-
   const customData = placeProp.filter(item => item.areaId === areaProp);
   const specificData = customData[0]?.placeData;
- // console.log("SPECIFIC DATA", specificData);
+
   const [open, setOpen] = useState(false);
   const handleOpen = () => {
     setOpen(true);
@@ -233,7 +243,7 @@ export default function NestedModal(props) {
                       <TableCell className='tableHeading'>{item.slotsQuantity}</TableCell>
                       <TableCell className='tableHeading'>{item.bookings}</TableCell>
                       <TableCell className='tableHeading toggle'>
-                        <ChildModal place={item.placeName} values={item.slotsQuantity} slots={item.slotsData} />
+                        <ChildModal areaProp={areaProp} place={item.placeName} values={item.slotsQuantity} slots={item.slotsData} />
                       </TableCell>
                     </TableRow>
                   ))}

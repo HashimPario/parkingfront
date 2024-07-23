@@ -23,12 +23,14 @@ const Register = () => {
   const formik = useFormik({
     initialValues: registerInitialValues,
     validationSchema: registerSchema,
-    onSubmit: async (values) => {
+    onSubmit: async (values, { resetForm }) => {
       const { name, email, password } = values;
       try {
         const res = await axios.post('https://parkingback.vercel.app/register', { name, email, password, isBlocked });
         toast.success(res.data.message);
-        //console.log("RESPONSE FROM BE", res.data);
+        resetForm();
+        //navigate('/');
+       
       } catch (error) {
         if (error.response && error.response.data) {
           toast.error(error.response.data.message);
@@ -77,7 +79,7 @@ const Register = () => {
                 errors.email
               ) : null}
             </span>
-            <div style={{ position: 'relative', width: '90%' }}>
+            <div style={{ position: 'relative', width: '100%', textAlign:'center' }}>
               <Input
                 type={eye ? "text" : "password"}
                 myclass="inp-pass"
@@ -105,7 +107,7 @@ const Register = () => {
                 errors.password
               ) : null}
             </span>
-            <div style={{ position: 'relative', width: '90%' }}>
+            <div style={{ position: 'relative', width: '100%', textAlign:'center' }}>
               <Input
                 type={eye2 ? "text" : "password"}
                 myclass="inp-pass"
