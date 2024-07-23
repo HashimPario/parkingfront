@@ -13,7 +13,7 @@ import timezone from 'dayjs/plugin/timezone';
 import isSameOrAfter from 'dayjs/plugin/isSameOrAfter';
 import isSameOrBefore from 'dayjs/plugin/isSameOrBefore';
 import 'react-toastify/dist/ReactToastify.css';
-import ModalClose from '@mui/joy/ModalClose';
+
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -64,20 +64,20 @@ function CustomModal(props) {
 
   const getPlaceData = async () => {
     axios.get('https://parkingback.vercel.app/getPlace')
-        .then((response) => {
-            console.log("RESPONSE COMING",response.data)
-            let tempData = response.data;
-            const customSlotsData = tempData.filter(item => item.areaId === areaProp);
-            const specificData = customSlotsData[0]?.placeData;
-        })
-       
-}
+      .then((response) => {
+        console.log("RESPONSE COMING", response.data)
+        let tempData = response.data;
+        const customSlotsData = tempData.filter(item => item.areaId === areaProp);
+        const specificData = customSlotsData[0]?.placeData;
+      })
+
+  }
 
   const userBooking = () => {
     try {
-      const today = dayjs().tz('Asia/Karachi').utc().toDate(); 
-      const bookingFrom = dayjs(from).tz('Asia/Karachi').utc().toDate(); 
-      const bookingTo = dayjs(to).tz('Asia/Karachi').utc().toDate(); 
+      const today = dayjs().tz('Asia/Karachi').utc().toDate();
+      const bookingFrom = dayjs(from).tz('Asia/Karachi').utc().toDate();
+      const bookingTo = dayjs(to).tz('Asia/Karachi').utc().toDate();
 
       if (bookingFrom && bookingTo && !isNaN(bookingFrom.getTime()) && !isNaN(bookingTo.getTime())) {
         const hours = Math.ceil((bookingTo - bookingFrom) / (1000 * 60 * 60));
@@ -99,16 +99,16 @@ function CustomModal(props) {
           })
           .catch((err) => {
             toast.error(`Error: ${err.response?.data?.message || err.message}`);
-         //   console.log("RESPONSE catch FROM BE", err.message);
+            //   console.log("RESPONSE catch FROM BE", err.message);
           });
-         getPlaceData();  
-         
+        getPlaceData();
+
       } else {
         toast.error("Kindly select valid bookingFrom and bookingTo dates");
       }
     } catch (err) {
       toast.error(`Unexpected error: ${err.message}`);
-  //    console.log(err);
+      //    console.log(err);
     }
     //window.location.reload(false);
   }
@@ -122,7 +122,7 @@ function CustomModal(props) {
         aria-labelledby="child-modal-title"
         aria-describedby="child-modal-description"
       >
-         {/* <ModalClose /> */}
+        {/* <ModalClose /> */}
         <Box className='custom-modal' sx={{ ...style, width: 400 }}>
           <ToastContainer />
           <h2>Book Slot</h2>
@@ -146,10 +146,10 @@ function CustomModal(props) {
 }
 
 function ChildModal(props) {
- 
+
   const { values, place, slots, areaProp } = props;
-  const[slotDetails, setSlotDetails] = useState(slots);
- 
+  const [slotDetails, setSlotDetails] = useState(slots);
+
   const myVal = parseInt(values, 10);
   const [open, setOpen] = useState(false);
 
@@ -173,12 +173,12 @@ function ChildModal(props) {
           <h2>Total Slots</h2>
           <div className='slots-container'>
             {slotDetails?.map(item => {
-           
-              const now = dayjs().utc(); 
+
+              const now = dayjs().utc();
               const bookingFrom = item.bookFrom ? dayjs(item.bookFrom).utc() : null;
               const bookingTo = item.bookTo ? dayjs(item.bookTo).utc() : null;
               const isBooked = bookingFrom && bookingTo ? now.isSameOrAfter(bookingFrom) && now.isSameOrBefore(bookingTo) : false;
-          
+
               return (
                 <div key={item.slotNumber} className='slots-box'>
                   <p>{item.slotNumber}</p>
@@ -212,6 +212,32 @@ export default function NestedModal(props) {
     setOpen(false);
   };
 
+  const deleteData = (id) => {
+    let customId = customData[0]._id;
+      console.log(id)
+      // console.log("place prop", placeProp)
+      console.log("custom data", customData[0]._id)
+      // console.log("specific data", specificData)
+        axios.post('https://parkingback.vercel.app/deletePlace', { customId, id })
+        .then((res)=>{
+          //  toast.success(res.data.message)
+          console.log(res.data)
+        }).catch((res)=>{
+          // toast.error(res.data.message)
+        })
+  }
+
+  // const handleDelete = async (placeDataId) => {
+  //   try {
+  //     const response = await axios.delete(`http://localhost:3000/places/${place._id}/placeData/${placeDataId}`);
+  //     setPlace(response.data); // Update the place state after deletion
+  //   } catch (error) {
+  //     console.error('Error deleting placeData:', error);
+  //   }
+  // };
+
+  
+
   return (
     <div>
       <span onClick={handleOpen}>VIEW</span>
@@ -221,7 +247,9 @@ export default function NestedModal(props) {
         aria-labelledby="parent-modal-title"
         aria-describedby="parent-modal-description"
       >
+
         <Box className='main-modal' sx={{ ...style, width: 600 }}>
+          <span className='close-btn' onClick={handleClose}>X</span>
           <h2 id="parent-modal-title">All Parking Places</h2>
           <div>
             <TableContainer className='tablecontainer_class'>
@@ -231,19 +259,25 @@ export default function NestedModal(props) {
                     <TableCell className='tableHeading'>S.No</TableCell>
                     <TableCell className='tableHeading'>Place</TableCell>
                     <TableCell className='tableHeading'>Slots</TableCell>
-                    <TableCell className='tableHeading'>Bookings</TableCell>
-                    <TableCell className='tableHeading'>Details</TableCell>
+                    {/* <TableCell className='tableHeading'>Bookings</TableCell> */}
+                    <TableCell className='tableHeading'>Operation</TableCell>
                   </TableRow>
                 </TableHead>
-                <TableBody>
+                <TableBody>  
                   {specificData && specificData.map((item, index) => (
                     <TableRow key={index} className='table_head_class'>
                       <TableCell className='tableHeading'>{index + 1}</TableCell>
                       <TableCell className='tableHeading'>{item.placeName}</TableCell>
                       <TableCell className='tableHeading'>{item.slotsQuantity}</TableCell>
-                      <TableCell className='tableHeading'>{item.bookings}</TableCell>
+                      {/* <TableCell className='tableHeading'>{item.bookings}</TableCell> */}
                       <TableCell className='tableHeading toggle'>
-                        <ChildModal areaProp={areaProp} place={item.placeName} values={item.slotsQuantity} slots={item.slotsData} />
+                        <Button variant="contained" className="edit-btn" color='success'>
+                          Edit
+                        </Button>
+                        <Button variant="contained" className="del-btn" color='error' onClick={()=>deleteData(item._id)}>
+                          Delete
+                        </Button>
+                        {/* <ChildModal areaProp={areaProp} place={item.placeName} values={item.slotsQuantity} slots={item.slotsData} /> */}
                       </TableCell>
                     </TableRow>
                   ))}
@@ -256,3 +290,6 @@ export default function NestedModal(props) {
     </div>
   );
 }
+
+
+
