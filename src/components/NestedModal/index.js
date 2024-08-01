@@ -6,13 +6,16 @@ import Modal from '@mui/material/Modal';
 import { Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
 import { toast, ToastContainer } from 'react-toastify';
 import axios from 'axios';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 import timezone from 'dayjs/plugin/timezone';
 import isSameOrAfter from 'dayjs/plugin/isSameOrAfter';
 import isSameOrBefore from 'dayjs/plugin/isSameOrBefore';
 import 'react-toastify/dist/ReactToastify.css';
+import Input from '../../components/Input'
+import { addPlaceData } from '../../store/slice';
+
 
 
 dayjs.extend(utc);
@@ -36,6 +39,7 @@ const style = {
 
 function CustomModal(props) {
   const { slotNum, place, areaProp } = props;
+  console.log("PLACE NAME: ", place)
   const userData = useSelector((state) => state.park.currentUserData);
   const userId = userData._id;
 
@@ -84,7 +88,7 @@ function CustomModal(props) {
         const cost = hours * 2;
 
         const bookingData = [{ placeName: place, slotNumber: slotNum, bookingDate: today, bookingFrom, bookingTo, cost }];
-
+        
         axios.post('https://parkingback.vercel.app/userbooking', { userId, bookingData })
           .then(() => {
             toast.success('Booking save successfully!');
@@ -102,6 +106,7 @@ function CustomModal(props) {
             //   console.log("RESPONSE catch FROM BE", err.message);
           });
         getPlaceData();
+        handleClose();
 
       } else {
         toast.error("Kindly select valid bookingFrom and bookingTo dates");
@@ -115,18 +120,18 @@ function CustomModal(props) {
 
   return (
     <React.Fragment>
-      <Button onClick={handleOpen}>Book Now</Button>
+      <Button variant="contained" color='success' onClick={handleOpen}>Book Now</Button>
       <Modal
         open={open}
         onClose={handleClose}
         aria-labelledby="child-modal-title"
         aria-describedby="child-modal-description"
       >
-        {/* <ModalClose /> */}
         <Box className='custom-modal' sx={{ ...style, width: 400 }}>
-          <ToastContainer />
+          <span className='close-btn' onClick={handleClose}>X</span>
+         
           <h2>Book Slot</h2>
-          <div className='slots-container'>
+          <div className='slotsContainer'>
             <p>----- Are you sure you want to book the slot? -----</p>
             <Button
               variant='contained'
@@ -146,65 +151,154 @@ function CustomModal(props) {
 }
 
 function ChildModal(props) {
-
-  const { values, place, slots, areaProp } = props;
-  const [slotDetails, setSlotDetails] = useState(slots);
-
-  const myVal = parseInt(values, 10);
   const [open, setOpen] = useState(false);
-
+  const [name, setName] = useState(props.placeName);
+  const [slots, setSlots] = useState(props.placeSlots);
+  const [placeId, setPlaceId] = useState(props.placeId);
+  const [areaId, setAreaId] = useState(props.areaId);
+  const [slotDetails, setSlotDetails] = useState(props.slots);
+  const role = useSelector((state) => state.park.userRole);
   const handleOpen = () => {
     setOpen(true);
   };
+
   const handleClose = () => {
     setOpen(false);
   };
 
+  const handleNameChange = (e) => {
+    setName(e.target.value);
+  };
+
+  const handleSlotsChange = (e) => {
+    setSlots(e.target.value);
+  };
+
+  const updateValues = (name, slots, areaId, placeId) => {
+    axios.put(`http://localhost:5000/update-place/${areaId}/${placeId}`, {
+      placeName: name,
+      slotsQuantity: parseInt(slots)
+    })
+      .then((res) => {
+        toast.success(res.data.message)
+        handleClose();
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
+
   return (
     <React.Fragment>
-      <Button onClick={handleOpen}>View</Button>
+      {
+        role == 'admin'
+          ?
+          <Button variant="contained" className="edit-btn" color='success' onClick={handleOpen}>Edit</Button>
+          :
+          <Button variant="contained" className="edit-btn" color='success' onClick={handleOpen}>Book Now</Button>
+      }
+
       <Modal
         open={open}
         onClose={handleClose}
         aria-labelledby="child-modal-title"
         aria-describedby="child-modal-description"
       >
-        <Box className='child-modal' sx={{ ...style, width: 500 }}>
-          <h2>Total Slots</h2>
-          <div className='slots-container'>
-            {slotDetails?.map(item => {
-
-              const now = dayjs().utc();
-              const bookingFrom = item.bookFrom ? dayjs(item.bookFrom).utc() : null;
-              const bookingTo = item.bookTo ? dayjs(item.bookTo).utc() : null;
-              const isBooked = bookingFrom && bookingTo ? now.isSameOrAfter(bookingFrom) && now.isSameOrBefore(bookingTo) : false;
-
-              return (
-                <div key={item.slotNumber} className='slots-box'>
-                  <p>{item.slotNumber}</p>
-                  <p>
-                    {isBooked ? (
-                      <Button variant='contained' disabled>Booked</Button>
-                    ) : (
-                      <CustomModal areaProp={areaProp} place={place} slotNum={item.slotNumber} />
-                    )}
-                  </p>
+        {
+          role == 'admin'
+            ?
+            <Box className='child-modal' sx={{ ...style, width: 500 }}>
+              <span className='close-btn' onClick={handleClose}>X</span>
+              <h2 style={{ textAlign: 'center' }}>Edit The Values</h2>
+              <form>
+                <div style={{ textAlign: 'center' }}>
+                  <Input
+                    type="text"
+                    val={name}
+                    change={handleNameChange}
+                    name="placeName"
+                    label="Enter Place Name"
+                    variant="standard"
+                    fullWidth
+                    margin="normal"
+                    myclass="inp-Style"
+                  />
+                  <Input
+                    type="text"
+                    val={slots}
+                    change={handleSlotsChange}
+                    name="slotsQuantity"
+                    label="No. of Slots"
+                    variant="standard"
+                    fullWidth
+                    margin="normal"
+                  />
                 </div>
-              );
-            })}
-          </div>
-        </Box>
+                <div style={{ display: 'flex', justifyContent: 'center', marginTop: '16px' }}>
+                  <Button
+                    variant='contained'
+                    className='updBtn'
+                    color='success'
+                    onClick={() => updateValues(name, slots, areaId, placeId)}
+                  >
+                    Update
+                  </Button>
+                </div>
+              </form>
+            </Box>
+            :
+            <Box className='childish-modal' sx={{ ...style, width: 500 }}>
+              <span className='close-btn' onClick={handleClose}>X</span>
+              <ToastContainer />
+              <h2 style={{ textAlign: 'center' }}>All Slots</h2>
+              <div className='slots-container'>
+                {slotDetails?.map(item => {
+
+                  const now = dayjs().utc();
+                  const bookingFrom = item.bookFrom ? dayjs(item.bookFrom).utc() : null;
+                  const bookingTo = item.bookTo ? dayjs(item.bookTo).utc() : null;
+                  const isBooked = bookingFrom && bookingTo ? now.isSameOrAfter(bookingFrom) && now.isSameOrBefore(bookingTo) : false;
+
+                  return (
+                    <div key={item.slotNumber} className='slots-box'>
+                      <p>{item.slotNumber}</p>
+                      <p style={{display:'flex', justifyContent:'center'}}>
+                        {isBooked ? (
+                          <Button variant='contained' disabled>Booked</Button>
+                        ) : (
+                          <CustomModal areaProp={areaId} place={name} slotNum={item.slotNumber} />
+                        )}
+                      </p>
+                    </div>
+                  );
+                })}
+              </div>
+            </Box>
+        }
       </Modal>
     </React.Fragment>
   );
 }
 
 export default function NestedModal(props) {
-  const { placeProp, areaProp } = props;
-  const customData = placeProp.filter(item => item.areaId === areaProp);
+
+  const dispatch = useDispatch();
+  //const { placeProp, areaProp } = props;
+  const { areaProp } = props;
+  const placeDetails = useSelector((state) => state.park.placeData);
+  const customData = placeDetails?.filter(item => item.areaId === areaProp);
   const specificData = customData[0]?.placeData;
 
+  const role = useSelector((state) => state.park.userRole);
+
+  const [mapData, setMapData] = useState();
+
+  useEffect(() => {
+    setMapData(specificData)
+  })
+
   const [open, setOpen] = useState(false);
+
   const handleOpen = () => {
     setOpen(true);
   };
@@ -212,32 +306,19 @@ export default function NestedModal(props) {
     setOpen(false);
   };
 
-  const deleteData = (id) => {
-    let customId = customData[0]._id;
-      console.log(id)
-      // console.log("place prop", placeProp)
-      console.log("custom data", customData[0]._id)
-      // console.log("specific data", specificData)
-        axios.post('https://parkingback.vercel.app/deletePlace', { customId, id })
-        .then((res)=>{
-          //  toast.success(res.data.message)
-          console.log(res.data)
-        }).catch((res)=>{
-          // toast.error(res.data.message)
-        })
+  const deleteData = (placeId) => {
+    let areaId = customData[0].areaId;
+    axios.delete(`http://localhost:5000/delete-place/${areaId}/${placeId}`)
+      .then((res) => {
+        let updatedData = specificData.filter(place => place._id !== placeId);
+        dispatch(addPlaceData(updatedData))
+        console.log("updated data", updatedData)
+        setMapData(updatedData)
+        toast.success(res.data.message)
+      }).catch((res) => {
+        toast.error(res.data.message)
+      })
   }
-
-  // const handleDelete = async (placeDataId) => {
-  //   try {
-  //     const response = await axios.delete(`http://localhost:3000/places/${place._id}/placeData/${placeDataId}`);
-  //     setPlace(response.data); // Update the place state after deletion
-  //   } catch (error) {
-  //     console.error('Error deleting placeData:', error);
-  //   }
-  // };
-
-  
-
   return (
     <div>
       <span onClick={handleOpen}>VIEW</span>
@@ -263,22 +344,25 @@ export default function NestedModal(props) {
                     <TableCell className='tableHeading'>Operation</TableCell>
                   </TableRow>
                 </TableHead>
-                <TableBody>  
-                  {specificData && specificData.map((item, index) => (
+                <TableBody>
+                  {mapData && mapData.map((item, index) => (
                     <TableRow key={index} className='table_head_class'>
                       <TableCell className='tableHeading'>{index + 1}</TableCell>
                       <TableCell className='tableHeading'>{item.placeName}</TableCell>
                       <TableCell className='tableHeading'>{item.slotsQuantity}</TableCell>
                       {/* <TableCell className='tableHeading'>{item.bookings}</TableCell> */}
-                      <TableCell className='tableHeading toggle'>
-                        <Button variant="contained" className="edit-btn" color='success'>
-                          Edit
-                        </Button>
-                        <Button variant="contained" className="del-btn" color='error' onClick={()=>deleteData(item._id)}>
-                          Delete
-                        </Button>
-                        {/* <ChildModal areaProp={areaProp} place={item.placeName} values={item.slotsQuantity} slots={item.slotsData} /> */}
-                      </TableCell>
+                      {role == 'admin' ?
+                        <TableCell className='tableHeading toggle'>
+                          <ChildModal areaId={areaProp} placeId={item._id} placeName={item.placeName} placeSlots={item.slotsQuantity} />
+                          <Button variant="contained" className="del-btn" color='error' onClick={() => deleteData(item._id)}>
+                            Delete
+                          </Button>
+                        </TableCell>
+                        :
+                        <TableCell>
+                          <ChildModal areaProp={areaProp} placeName={item.placeName} values={item.slotsQuantity} slots={item.slotsData} />
+                        </TableCell>
+                      }
                     </TableRow>
                   ))}
                 </TableBody>

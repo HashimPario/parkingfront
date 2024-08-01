@@ -14,6 +14,8 @@ import NestedModal from '../components/NestedModal'
 import { useSelector } from 'react-redux';
 import { SideBar, SideBarUser } from '../helper/constant'
 import DateTimePickerValue from '../components/DatePicker'
+import { useDispatch } from 'react-redux'
+import {addPlaceData} from '../store/slice'
 
 
 const Dashboard = () => {
@@ -21,6 +23,8 @@ const Dashboard = () => {
   const [placeData, setPlaceData] = useState([]);
   const [open, setOpen] = useState(false)
   const [sideNavData, setSideNavData] = useState([]);
+
+  const dispatch = useDispatch();
 
   const role = useSelector((state) => state.park.userRole);
 
@@ -78,7 +82,8 @@ const Dashboard = () => {
   const getPlace = async () => {
     axios.get('https://parkingback.vercel.app/getPlace')
       .then((response) => {
-        setPlaceData(response.data)
+       setPlaceData(response.data)
+        dispatch(addPlaceData(response.data));
       })
   }
 
@@ -223,7 +228,9 @@ const Dashboard = () => {
                               variant='contained'
                               className='areaBtn'
                             >
-                              <NestedModal placeProp={placeData} areaProp={item._id} />
+                              <NestedModal areaProp={item._id} />
+                              {/* <NestedModal placeProp={placeData} areaProp={item._id} /> */}
+
                             </Button>
                           </div>
                         </div>

@@ -104,8 +104,14 @@
   overflow-x: auto;
 }
 .child-modal{
-  height: 70vh;
-  overflow-x: auto;
+  height: 40vh;
+  width: 300px !important;
+  /* overflow-x: auto; */
+}
+.childish-modal{
+  /* height: 40vh;
+  width: 300px !important; */
+  /* overflow-x: auto; */
 }
 .custom-modal{
   height: 30vh;
@@ -118,6 +124,12 @@
   display: flex;
   flex-wrap: wrap;
   /* justify-content: space-between; */
+
+}
+.slotsContainer{
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
 
 }
 .slots-box{
@@ -135,6 +147,10 @@
 }
 .slots-box > p{
   margin: 0;
+}
+.disable-btn{
+  margin-left: 2px;
+  width: 93%;
 }
 .disable-slots-box{
   background-color: grey;
@@ -176,4 +192,10 @@
 }
 .edit-btn{
   margin-right: 5px !important;
+}
+.updBtn{
+  margin-top: 10px !important;
+}
+.inp-Style{
+  margin-bottom: 10px !important;
 }

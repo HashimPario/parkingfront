@@ -4,7 +4,8 @@ import { createSlice } from "@reduxjs/toolkit";
 const initialState = {
     currentUserData: '',
     userRole: '',
-    count: 0
+    count: 0,
+    placeData:[]
 }
 
 const parkingSlice = createSlice({
@@ -22,10 +23,13 @@ const parkingSlice = createSlice({
         },
         setUserRole: (state, action) => {
             state.userRole = action.payload;
-          }
+        },
+        addPlaceData: (state, action) => {
+            state.placeData = action.payload;
+        },
     }
 })
 
-export const { addUser, clearUser,setUserRole } = parkingSlice.actions;
+export const { addUser, clearUser,setUserRole, addPlaceData } = parkingSlice.actions;
 export default parkingSlice.reducer;
 
