@@ -175,7 +175,7 @@ function ChildModal(props) {
   };
 
   const updateValues = (name, slots, areaId, placeId) => {
-    axios.put(`http://localhost:5000/update-place/${areaId}/${placeId}`, {
+    axios.put(`https://parkingback.vercel.app/update-place/${areaId}/${placeId}`, {
       placeName: name,
       slotsQuantity: parseInt(slots)
     })
@@ -308,7 +308,7 @@ export default function NestedModal(props) {
 
   const deleteData = (placeId) => {
     let areaId = customData[0].areaId;
-    axios.delete(`http://localhost:5000/delete-place/${areaId}/${placeId}`)
+    axios.delete(`https://parkingback.vercel.app/delete-place/${areaId}/${placeId}`)
       .then((res) => {
         let updatedData = specificData.filter(place => place._id !== placeId);
         dispatch(addPlaceData(updatedData))
