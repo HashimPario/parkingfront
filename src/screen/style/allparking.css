@@ -201,7 +201,7 @@
 }
 
 .date-time-style{
-  background-color: red;
+  /* background-color: red; */
   display: flex;
   align-items: center;
   vertical-align: middle;
