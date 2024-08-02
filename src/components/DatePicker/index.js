@@ -34,6 +34,7 @@ export default function DateTimePickerValue() {
   };
 
   return (
+    <div className='date-time-style'>
     <LocalizationProvider dateAdapter={AdapterDayjs}>
       <DemoContainer components={['DateTimePicker', 'DateTimePicker']}>
         <DateTimePicker
@@ -48,5 +49,6 @@ export default function DateTimePickerValue() {
         />
       </DemoContainer>
     </LocalizationProvider>
+    </div>
   );
 }

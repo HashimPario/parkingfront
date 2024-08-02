@@ -290,13 +290,6 @@ export default function NestedModal(props) {
   const specificData = customData[0]?.placeData;
 
   const role = useSelector((state) => state.park.userRole);
-
-  const [mapData, setMapData] = useState();
-
-  useEffect(() => {
-    setMapData(specificData)
-  })
-
   const [open, setOpen] = useState(false);
 
   const handleOpen = () => {
@@ -311,14 +304,31 @@ export default function NestedModal(props) {
     axios.delete(`https://parkingback.vercel.app/delete-place/${areaId}/${placeId}`)
       .then((res) => {
         let updatedData = specificData.filter(place => place._id !== placeId);
-        dispatch(addPlaceData(updatedData))
-        console.log("updated data", updatedData)
-        setMapData(updatedData)
-        toast.success(res.data.message)
-      }).catch((res) => {
-        toast.error(res.data.message)
+        dispatch(addPlaceData(updatedData)); 
+        setMapData(updatedData); 
+        toast.success(res.data.message);
+      })
+      .catch((res) => {
+        toast.error(res.response.data.message);
+      });
+  }
+
+  const [mapData, setMapData] = useState([]);
+
+  useEffect(() => {
+    setMapData(specificData);
+    //getPlace();
+  },[]);
+
+  const getPlace = async () => {
+    axios.get('https://parkingback.vercel.app/getPlace')
+      .then((response) => {
+      // setPlaceData(response.data)
+        dispatch(addPlaceData(response.data));
       })
   }
+
+
   return (
     <div>
       <span onClick={handleOpen}>VIEW</span>

@@ -199,3 +199,11 @@
 .inp-Style{
   margin-bottom: 10px !important;
 }
+
+.date-time-style{
+  background-color: red;
+  display: flex;
+  align-items: center;
+  vertical-align: middle;
+  justify-content: center;
+}
