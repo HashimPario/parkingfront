@@ -5,7 +5,7 @@ const initialState = {
     currentUserData: '',
     userRole: '',
     count: 0,
-    placeData:[]
+    placeData: []
 }
 
 const parkingSlice = createSlice({
@@ -27,9 +27,26 @@ const parkingSlice = createSlice({
         addPlaceData: (state, action) => {
             state.placeData = action.payload;
         },
+        removePlaceData: (state, action) => {
+            const { areaId, placeId } = action.payload;
+            const areaIndex = state.placeData.findIndex(item => item.areaId === areaId);
+            if (areaIndex > -1) {
+                state.placeData[areaIndex].placeData = state.placeData[areaIndex].placeData.filter(place => place._id !== placeId);
+            }
+        },
+        updatePlaceData: (state, action) => {
+            const { areaId, placeId, updatedPlace } = action.payload;
+            const areaIndex = state.placeData.findIndex(item => item.areaId === areaId);
+            if (areaIndex > -1) {
+              const placeIndex = state.placeData[areaIndex].placeData.findIndex(place => place._id === placeId);
+              if (placeIndex > -1) {
+                state.placeData[areaIndex].placeData[placeIndex] = updatedPlace;
+              }
+            }
+          },
     }
 })
 
-export const { addUser, clearUser,setUserRole, addPlaceData } = parkingSlice.actions;
+export const { addUser, clearUser, setUserRole, addPlaceData,removePlaceData, updatePlaceData } = parkingSlice.actions;
 export default parkingSlice.reducer;
 

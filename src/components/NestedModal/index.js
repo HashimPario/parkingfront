@@ -14,7 +14,7 @@ import isSameOrAfter from 'dayjs/plugin/isSameOrAfter';
 import isSameOrBefore from 'dayjs/plugin/isSameOrBefore';
 import 'react-toastify/dist/ReactToastify.css';
 import Input from '../../components/Input'
-import { addPlaceData } from '../../store/slice';
+import { addPlaceData,removePlaceData,updatePlaceData } from '../../store/slice';
 
 
 
@@ -158,6 +158,8 @@ function ChildModal(props) {
   const [areaId, setAreaId] = useState(props.areaId);
   const [slotDetails, setSlotDetails] = useState(props.slots);
   const role = useSelector((state) => state.park.userRole);
+  const dispatch = useDispatch();
+  
   const handleOpen = () => {
     setOpen(true);
   };
@@ -174,20 +176,41 @@ function ChildModal(props) {
     setSlots(e.target.value);
   };
 
+  // const updateValues = (name, slots, areaId, placeId) => {
+  //   axios.put(`https://parkingback.vercel.app/update-place/${areaId}/${placeId}`, {
+  //     placeName: name,
+  //     slotsQuantity: parseInt(slots)
+  //   })
+  //     .then((res) => {
+  //       toast.success(res.data.message)
+  //       handleClose();
+  //     })
+  //     .catch((error) => {
+  //       console.log(error);
+  //     });
+  // };
+
+
   const updateValues = (name, slots, areaId, placeId) => {
     axios.put(`https://parkingback.vercel.app/update-place/${areaId}/${placeId}`, {
       placeName: name,
       slotsQuantity: parseInt(slots)
     })
       .then((res) => {
-        toast.success(res.data.message)
+       
+        const updatedPlace = {
+          ...props,
+          placeName: name,
+          slotsQuantity: parseInt(slots),
+        };
+        dispatch(updatePlaceData({ areaId, placeId, updatedPlace }));
+        toast.success(res.data.message);
         handleClose();
       })
       .catch((error) => {
         console.log(error);
       });
   };
-
   return (
     <React.Fragment>
       {
@@ -299,13 +322,28 @@ export default function NestedModal(props) {
     setOpen(false);
   };
 
+  // const deleteData = (placeId) => {
+  //   let areaId = customData[0].areaId;
+  //   axios.delete(`https://parkingback.vercel.app/delete-place/${areaId}/${placeId}`)
+  //     .then((res) => {
+  //       let updatedData = specificData.filter(place => place._id !== placeId);
+  //       dispatch(addPlaceData(updatedData)); 
+  //       setMapData(updatedData); 
+  //       toast.success(res.data.message);
+  //     })
+  //     .catch((res) => {
+  //       toast.error(res.response.data.message);
+  //     });
+  // }
+
   const deleteData = (placeId) => {
     let areaId = customData[0].areaId;
+  
     axios.delete(`https://parkingback.vercel.app/delete-place/${areaId}/${placeId}`)
       .then((res) => {
-        let updatedData = specificData.filter(place => place._id !== placeId);
-        dispatch(addPlaceData(updatedData)); 
-        setMapData(updatedData); 
+        // Dispatch the action to update Redux state
+        dispatch(removePlaceData({ areaId, placeId }));
+        setMapData(prevMapData => prevMapData.filter(place => place._id !== placeId)); // Update local state if needed
         toast.success(res.data.message);
       })
       .catch((res) => {
@@ -317,17 +355,7 @@ export default function NestedModal(props) {
 
   useEffect(() => {
     setMapData(specificData);
-    //getPlace();
-  },[]);
-
-  const getPlace = async () => {
-    axios.get('https://parkingback.vercel.app/getPlace')
-      .then((response) => {
-      // setPlaceData(response.data)
-        dispatch(addPlaceData(response.data));
-      })
-  }
-
+  }, [specificData]); 
 
   return (
     <div>
@@ -355,7 +383,7 @@ export default function NestedModal(props) {
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {mapData && mapData.map((item, index) => (
+                  {specificData && specificData.map((item, index) => (
                     <TableRow key={index} className='table_head_class'>
                       <TableCell className='tableHeading'>{index + 1}</TableCell>
                       <TableCell className='tableHeading'>{item.placeName}</TableCell>
@@ -384,6 +412,9 @@ export default function NestedModal(props) {
     </div>
   );
 }
+
+
+
 
 
 
