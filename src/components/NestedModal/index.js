@@ -16,6 +16,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import Input from '../../components/Input'
 import { addPlaceData, removePlaceData, updatePlaceData } from '../../store/slice';
 import SlotCard from '../SlotCard';
+import { useNavigate } from 'react-router-dom';
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -45,6 +46,8 @@ export function CustomModal(props) {
   const [open, setOpen] = useState(false);
   const [from, setFrom] = useState(null);
   const [to, setTo] = useState(null);
+
+  const navigate = useNavigate();
 
   const dispatch = useDispatch();
 
@@ -93,7 +96,7 @@ export function CustomModal(props) {
         await axios.post('https://parkingback.vercel.app/userbooking', { userId, bookingData });
         await axios.post('https://parkingback.vercel.app/addbooking', { userId, bookingData });
   
-        // Immediately update the Redux state with the new booking status
+       
         dispatch(updatePlaceData({
           areaId: areaProp,
           placeId: place,
@@ -103,13 +106,20 @@ export function CustomModal(props) {
               slot.slotNumber === slotNum
                 ? { ...slot, isBooked: true, bookingFrom, bookingTo }
                 : slot
-            ) : [] // Safeguard in case slots are undefined
+            ) : []
           }
         }));
-  
-        toast.success('Booking saved successfully!');
+
         setIsBooked(true)
-        handleClose(); // Close the modal on success
+  
+        // toast.success('Booking saved successfully!');
+       
+        // // handleClose(); 
+        // navigate('/mybookings');
+        toast.success('Booking saved successfully!', {
+          autoClose: 1000,
+          onClose: () => navigate('/mybookings')
+        });
       } else {
         toast.error("Kindly select valid bookingFrom and bookingTo dates");
       }

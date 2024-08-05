@@ -175,8 +175,8 @@ const Dashboard = () => {
                   <div className="flip-card-inner">
                     <div className="flip-card-front">
                       <h2>{item.areaName}</h2>
-                      <p>Total Places: {item.areaQty}</p>
-                      <p>Total Slots: {item.slotQty}</p>
+                      {/* <p>Total Places: {item.areaQty}</p>
+                      <p>Total Slots: {item.slotQty}</p> */}
                     </div>
                     <div className="flip-card-back">
                       <p className='card-heading'>{item.areaName}</p>
@@ -255,8 +255,8 @@ const Dashboard = () => {
                   <div className="flip-card-inner">
                     <div className="flip-card-front">
                       <h2>{item.areaName}</h2>
-                      <p>Total Places: {item.areaQty}</p>
-                      <p>Total Slots: {item.slotQty}</p>
+                      {/* <p>Total Places: {item.areaQty}</p>
+                      <p>Total Slots: {item.slotQty}</p> */}
                     </div>
                     <div className="flip-card-back">
                       <p className='card-heading2'>{item.areaName}</p>
