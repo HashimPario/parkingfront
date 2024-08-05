@@ -14,9 +14,8 @@ import isSameOrAfter from 'dayjs/plugin/isSameOrAfter';
 import isSameOrBefore from 'dayjs/plugin/isSameOrBefore';
 import 'react-toastify/dist/ReactToastify.css';
 import Input from '../../components/Input'
-import { addPlaceData,removePlaceData,updatePlaceData } from '../../store/slice';
-
-
+import { addPlaceData, removePlaceData, updatePlaceData } from '../../store/slice';
+import SlotCard from '../SlotCard';
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -37,8 +36,8 @@ const style = {
   pb: 3,
 };
 
-function CustomModal(props) {
-  const { slotNum, place, areaProp } = props;
+export function CustomModal(props) {
+  const { slotNum, place, areaProp, setIsBooked } = props;
   console.log("PLACE NAME: ", place)
   const userData = useSelector((state) => state.park.currentUserData);
   const userId = userData._id;
@@ -46,6 +45,8 @@ function CustomModal(props) {
   const [open, setOpen] = useState(false);
   const [from, setFrom] = useState(null);
   const [to, setTo] = useState(null);
+
+  const dispatch = useDispatch();
 
   const handleOpen = () => {
     setOpen(true);
@@ -77,47 +78,46 @@ function CustomModal(props) {
 
   }
 
-  const userBooking = () => {
+  const userBooking = async () => {
     try {
       const today = dayjs().tz('Asia/Karachi').utc().toDate();
       const bookingFrom = dayjs(from).tz('Asia/Karachi').utc().toDate();
       const bookingTo = dayjs(to).tz('Asia/Karachi').utc().toDate();
-
+  
       if (bookingFrom && bookingTo && !isNaN(bookingFrom.getTime()) && !isNaN(bookingTo.getTime())) {
         const hours = Math.ceil((bookingTo - bookingFrom) / (1000 * 60 * 60));
         const cost = hours * 2;
-
+  
         const bookingData = [{ placeName: place, slotNumber: slotNum, bookingDate: today, bookingFrom, bookingTo, cost }];
-        
-        axios.post('https://parkingback.vercel.app/userbooking', { userId, bookingData })
-          .then(() => {
-            toast.success('Booking save successfully!');
-          })
-          .catch((err) => {
-            toast.error(`Error: ${err.response?.data?.message || err.message}`);
-          });
-
-        axios.post('https://parkingback.vercel.app/addbooking', { userId, bookingData })
-          .then(() => {
-            //toast.success('Booking added successfully!');
-          })
-          .catch((err) => {
-            toast.error(`Error: ${err.response?.data?.message || err.message}`);
-            //   console.log("RESPONSE catch FROM BE", err.message);
-          });
-        getPlaceData();
-        handleClose();
-
+  
+        await axios.post('https://parkingback.vercel.app/userbooking', { userId, bookingData });
+        await axios.post('https://parkingback.vercel.app/addbooking', { userId, bookingData });
+  
+        // Immediately update the Redux state with the new booking status
+        dispatch(updatePlaceData({
+          areaId: areaProp,
+          placeId: place,
+          updatedPlace: {
+            ...place,
+            slots: place.slots ? place.slots.map(slot =>
+              slot.slotNumber === slotNum
+                ? { ...slot, isBooked: true, bookingFrom, bookingTo }
+                : slot
+            ) : [] // Safeguard in case slots are undefined
+          }
+        }));
+  
+        toast.success('Booking saved successfully!');
+        setIsBooked(true)
+        handleClose(); // Close the modal on success
       } else {
         toast.error("Kindly select valid bookingFrom and bookingTo dates");
       }
     } catch (err) {
       toast.error(`Unexpected error: ${err.message}`);
-      //    console.log(err);
     }
-    //window.location.reload(false);
-  }
-
+  };
+  
   return (
     <React.Fragment>
       <Button variant="contained" color='success' onClick={handleOpen}>Book Now</Button>
@@ -129,7 +129,7 @@ function CustomModal(props) {
       >
         <Box className='custom-modal' sx={{ ...style, width: 400 }}>
           <span className='close-btn' onClick={handleClose}>X</span>
-         
+
           <h2>Book Slot</h2>
           <div className='slotsContainer'>
             <p>----- Are you sure you want to book the slot? -----</p>
@@ -159,7 +159,7 @@ function ChildModal(props) {
   const [slotDetails, setSlotDetails] = useState(props.slots);
   const role = useSelector((state) => state.park.userRole);
   const dispatch = useDispatch();
-  
+
   const handleOpen = () => {
     setOpen(true);
   };
@@ -176,28 +176,13 @@ function ChildModal(props) {
     setSlots(e.target.value);
   };
 
-  // const updateValues = (name, slots, areaId, placeId) => {
-  //   axios.put(`https://parkingback.vercel.app/update-place/${areaId}/${placeId}`, {
-  //     placeName: name,
-  //     slotsQuantity: parseInt(slots)
-  //   })
-  //     .then((res) => {
-  //       toast.success(res.data.message)
-  //       handleClose();
-  //     })
-  //     .catch((error) => {
-  //       console.log(error);
-  //     });
-  // };
-
-
   const updateValues = (name, slots, areaId, placeId) => {
     axios.put(`https://parkingback.vercel.app/update-place/${areaId}/${placeId}`, {
       placeName: name,
       slotsQuantity: parseInt(slots)
     })
       .then((res) => {
-       
+
         const updatedPlace = {
           ...props,
           placeName: name,
@@ -274,28 +259,29 @@ function ChildModal(props) {
               <span className='close-btn' onClick={handleClose}>X</span>
               <ToastContainer />
               <h2 style={{ textAlign: 'center' }}>All Slots</h2>
+             
               <div className='slots-container'>
-                {slotDetails?.map(item => {
-
-                  const now = dayjs().utc();
-                  const bookingFrom = item.bookFrom ? dayjs(item.bookFrom).utc() : null;
-                  const bookingTo = item.bookTo ? dayjs(item.bookTo).utc() : null;
-                  const isBooked = bookingFrom && bookingTo ? now.isSameOrAfter(bookingFrom) && now.isSameOrBefore(bookingTo) : false;
-
-                  return (
-                    <div key={item.slotNumber} className='slots-box'>
-                      <p>{item.slotNumber}</p>
-                      <p style={{display:'flex', justifyContent:'center'}}>
-                        {isBooked ? (
-                          <Button variant='contained' disabled>Booked</Button>
-                        ) : (
-                          <CustomModal areaProp={areaId} place={name} slotNum={item.slotNumber} />
-                        )}
-                      </p>
-                    </div>
-                  );
-                })}
+                {slotDetails?.length > 0 ? (
+                  slotDetails.map(item => {
+                    return (
+                      <SlotCard item={item} areaId={areaId} name={name}/>
+                      // <div key={item.slotNumber} className='slots-box'>
+                      //   <p>{item.slotNumber}</p>
+                      //   <p style={{ display: 'flex', justifyContent: 'center' }}>
+                      //     {isBooked ? (
+                      //       <Button variant='contained' disabled>Booked</Button>
+                      //     ) : (
+                      //       <CustomModal areaProp={areaId} place={name} slotNum={item.slotNumber} />
+                      //     )}
+                      //   </p>
+                      // </div>
+                    );
+                  })
+                ) : (
+                  <p>No slots available</p>
+                )}
               </div>
+
             </Box>
         }
       </Modal>
@@ -338,12 +324,12 @@ export default function NestedModal(props) {
 
   const deleteData = (placeId) => {
     let areaId = customData[0].areaId;
-  
+
     axios.delete(`https://parkingback.vercel.app/delete-place/${areaId}/${placeId}`)
       .then((res) => {
-        // Dispatch the action to update Redux state
+
         dispatch(removePlaceData({ areaId, placeId }));
-        setMapData(prevMapData => prevMapData.filter(place => place._id !== placeId)); // Update local state if needed
+        setMapData(prevMapData => prevMapData.filter(place => place._id !== placeId));
         toast.success(res.data.message);
       })
       .catch((res) => {
@@ -355,7 +341,7 @@ export default function NestedModal(props) {
 
   useEffect(() => {
     setMapData(specificData);
-  }, [specificData]); 
+  }, [specificData]);
 
   return (
     <div>
@@ -412,9 +398,3 @@ export default function NestedModal(props) {
     </div>
   );
 }
-
-
-
-
-
-

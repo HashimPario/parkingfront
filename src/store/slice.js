@@ -50,3 +50,4 @@ const parkingSlice = createSlice({
 export const { addUser, clearUser, setUserRole, addPlaceData,removePlaceData, updatePlaceData } = parkingSlice.actions;
 export default parkingSlice.reducer;
 
+
